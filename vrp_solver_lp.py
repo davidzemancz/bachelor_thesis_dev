@@ -20,6 +20,7 @@ def solve(vrp : VRP):
             var_key = (u, v)
             var = solver.BoolVar(str(var_key))
             edge_vars[var_key] = var
+
     node_vars = {} # aditional variables for subtour elimination
     for u in range(1, vrp.nodes_count):
         var_key = (u)
@@ -52,9 +53,9 @@ def solve(vrp : VRP):
             if order1.id == order2.id: continue
             solver.Add(node_vars[(order1.node)] - node_vars[(order2.node)] + ((vrp.nodes_count - 1) * edge_vars[(order1.node, order2.node)]) <= vrp.nodes_count - 2)
 
-    # # 5) Capacity constraints
+    # 5) Capacity constraints
     # for vehicle in vrp.vehicles:
-    #     solver.Add(sum([edge_vars[var_key]*vrp.order(var_key[1]).demand for var_key in edge_vars if var_key[1] != vrp.depot_node and var_key[2] == vehicle.id]) <= vehicle.capacity)
+    #     solver.Add(sum([edge_vars[var_key] * vrp.order(var_key[1]).demand for var_key in edge_vars if var_key[1] != vrp.depot_node]) <= vehicle.capacity)
 
 
     # 6) Vehicle is used at most once

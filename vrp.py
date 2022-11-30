@@ -15,10 +15,11 @@ class Vehicle:
 class Order:
     NONE = None
 
-    def __init__(self, id, node, demand):
+    def __init__(self, id, node, demand, cords):
         self.id = id
         self.node = node
         self.demand = demand
+        self.cords = cords
 
 class Ride:
     def __init__(self, vehicle, nodes):
@@ -56,6 +57,13 @@ class VRP:
     def order(self, orderId) -> Order:
         for o in self.orders:
             if o.id == orderId: return o
+        raise KeyError(orderId)
+
+    def cords(self, node) -> Order:
+        if node > 0:
+            for o in self.orders:
+                if o.node == node: return o.cords
+        return (0,0)
         raise KeyError(orderId)
 
     def copy(self):

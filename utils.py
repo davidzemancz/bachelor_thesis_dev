@@ -1,5 +1,6 @@
 
 from itertools import chain, combinations
+import math
 import random
 
 
@@ -17,3 +18,6 @@ def time_to_str(sec):
 def rnd_color(f):
   if f == 'hex':
     return "#"+''.join([random.choice('0123456789ABCDEF') for i in range(6)])
+
+def eclidean_norm(cords1, cords2):
+    return math.sqrt((cords1[0] - cords2[0])**2 + (cords1[1] - cords2[1])**2)
