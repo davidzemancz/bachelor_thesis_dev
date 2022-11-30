@@ -1,10 +1,10 @@
 import random
 import networkx as nx
 import numpy as np
-#from matplotlib import pyplot as plt
-#from matplotlib.animation import FuncAnimation
+from matplotlib import pyplot as plt
+from matplotlib.animation import FuncAnimation
 from vrp import VRP,Ride,Vehicle,Order
-from pyvis.network import Network
+from networkx.drawing.nx_agraph import graphviz_layout
 import utils
 
 def draw(vrp : VRP):
@@ -21,8 +21,8 @@ def draw(vrp : VRP):
             G.add_edge(u, v, weight = 1/dist if dist != 0 else 0, len=dist)
     #pos = nx.kamada_kawai_layout(G)
     #pos = nx.planar_layout(G)
-    pos = nx.spring_layout(G)
-    #pos = graphviz_layout(G,prog="dot")
+    #pos = nx.fruchterman_reingold_layout(G)
+    pos = graphviz_layout(G, prog='sfdp')
 
     # Nodes
     node_size = 100
@@ -46,7 +46,7 @@ def draw(vrp : VRP):
         nodelist=[vrp.depot_node],
         node_color="lightblue"
     )
-    labels = {order.node: f'{order.id};{order.demand}' for order in vrp.orders}
+    labels = {order.node: f'{order.id}' for order in vrp.orders}
     labels[vrp.depot_node] = 'D'
     nx.draw_networkx_labels(G, pos, labels)
 
@@ -62,23 +62,8 @@ def draw(vrp : VRP):
             alpha=1,
         )
     edge_labels = nx.get_edge_attributes(G, 'len')
-    nx.draw_networkx_edge_labels(G, pos=pos, label_pos=0.5, edge_labels=edge_labels)
+    #nx.draw_networkx_edge_labels(G, pos=pos, label_pos=0.5, edge_labels=edge_labels)
 
     # Plot graph
     plt.show()
 
-def draw_pyvis(vrp : VRP):
-    # Grid graph
-    G = nx.Graph()
-
-    # Add edges and get plannar layout
-    for ride in vrp.rides:
-        for i in range(len(ride.nodes)-1):
-            u = ride.nodes[i]
-            v = ride.nodes[i+1]
-            dist = vrp.dist(u,v)
-            G.add_edge(u, v, weight = 1/dist if dist != 0 else 0, len=dist)
-    
-    nt = Network('500px', '500px')
-    nt.from_nx(G)
-    nt.show('C:\\Users\\David\\Documents\\d\\nx.html')
