@@ -1,6 +1,5 @@
 import utils
 import random
-from vrp import VRP
 from vrp import VRP,Ride,Vehicle,Order
 
 def generate(orders_count, vehicles_count, seed = None, demands_range = (1,5), capcities_range = (1,20), dist = None) -> VRP:
