@@ -9,6 +9,16 @@ def solve(trp : TRP):
 
     solver = pywraplp.Solver.CreateSolver('SCIP')
 
-  
+    # Variables
+    edge_vars = {}
+    for edge in trp.edges():
+        var = solver.BoolVar(str(edge))
+        edge_vars[edge] = var
+
+    # Constraints
+
+    # Objective function
+    
+    
 
     return trp

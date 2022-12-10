@@ -46,5 +46,25 @@ class TRP:
             if r.id == id: return r
         raise KeyError(id)
 
+    def nodes(self):
+        nodes = []
+        for vehicle in self.vehicles:
+            nodes.append(vehicle.node)
+
+        for request in self.requests:
+            nodes.append(request.nodeFrom)
+            nodes.append(request.nodeTo)
+
+        return nodes
+
+    def edges(self):
+        nodes = self.nodes()
+        edges = []
+        for node1 in nodes:
+            for node2 in nodes:
+                if node1 == node2: continue
+                edges.append((node1, node2))
+
+
     def copy(self):
         return copy.deepcopy(self)
