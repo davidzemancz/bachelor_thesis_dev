@@ -64,8 +64,6 @@ def solve(trp : TRP):
     elif status == pywraplp.Solver.ABNORMAL: raise SystemError(f'Solution is ABNORMAL')
     elif status == pywraplp.Solver.NOT_SOLVED: raise SystemError(f'Solution not been found yet')
     
-    for node in time_vars:
-        print(node, time_vars[node].solution_value())
 
     # Get routes
     routes_dict = {}
@@ -84,5 +82,9 @@ def solve(trp : TRP):
 
         if len(route) > 1: trp.routes.append(route)
 
+    for i,route in enumerate(trp.routes):
+        print('Route', i)
+        for node in route:
+            print('Node', node, 'time', time_vars[node].solution_value())
 
     return trp, stats

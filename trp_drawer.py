@@ -24,13 +24,12 @@ def draw(trp : TRP):
         for i in range(len(route)-1):
             u = route[i]
             v = route[i+1]
-            dist = trp.dist(u,v)
-            G.add_edge(u, v, weight = 1/dist if dist != 0 else 0, len=dist)
-    #pos = nx.sprite_layout(G)
-    # pos = nx.kamada_kawai_layout(G)
+            G.add_edge(u, v)
+    pos = nx.spring_layout(G)
+    #pos = nx.kamada_kawai_layout(G)
     #pos = nx.planar_layout(G)
     #pos = nx.fruchterman_reingold_layout(G)
-    pos = graphviz_layout(G, prog='sfdp')
+    #pos = graphviz_layout(G, prog='sfdp')
     #pos = graphviz_layout(G, prog='dot')
 
     # Draw nodes
