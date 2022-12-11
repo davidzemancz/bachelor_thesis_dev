@@ -30,8 +30,8 @@ def draw(trp : TRP):
     # pos = nx.kamada_kawai_layout(G)
     #pos = nx.planar_layout(G)
     #pos = nx.fruchterman_reingold_layout(G)
-    #pos = graphviz_layout(G, prog='sfdp')
-    pos = graphviz_layout(G, prog='dot')
+    pos = graphviz_layout(G, prog='sfdp')
+    #pos = graphviz_layout(G, prog='dot')
 
     # Draw nodes
     node_size = 100
@@ -59,7 +59,7 @@ def draw(trp : TRP):
             G,
             pos,
             edgelist=[(request.nodeFrom, request.nodeTo)],
-            width=8,
+            width=4,
             edge_color='blue',
             alpha=0.5,
         )

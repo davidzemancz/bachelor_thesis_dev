@@ -10,3 +10,4 @@ def to_console(trp : TRP, name = 'TRP', stats = None):
         print(f'Route {route}')
     if stats:
         print(f'Time elapsed:', utils.time_to_str(stats['time_elapsed']))
+        print(f'Objective value:', stats['objective_value'])
