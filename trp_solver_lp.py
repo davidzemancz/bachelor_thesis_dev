@@ -8,17 +8,74 @@ import utils
 def solve(trp : TRP):
 
     solver = pywraplp.Solver.CreateSolver('SCIP')
+    edges = trp.edges()
+    nodes = trp.nodes()
+    vehicle_nodes = [vehicle.node for vehicle in trp.vehicles]
 
     # Variables
     edge_vars = {}
-    for edge in trp.edges():
+    for edge in edges:
         var = solver.BoolVar(str(edge))
         edge_vars[edge] = var
 
     # Constraints
+    
+    # 1) Routes must be continuous and cannot divide
+
+    for node1 in nodes:
+        for node2 in nodes:
+            if node1 == node2 or node1 in vehicle_nodes: continue
+            solver.Add(sum([edge_vars[(node3, node1)] for node3 in nodes if node1 != node3]) >= edge_vars[(node1, node2)])
+
+    # 2) Vehicle can leave its original location using at most one edge
+    for vehicle in trp.vehicles:
+        solver.Add(sum([edge_vars[(vehicle.node, node)] for node in nodes if node != vehicle.node]) == 1)
+        #solver.Add(sum([edge_vars[(node, vehicle.node)] for node in nodes if node != vehicle.node]) == 0)
+
+    # Cycles are not allowed
+    # for node1 in nodes:
+    #     for node2 in nodes:
+    #         if node1 == node2: continue
+    #         solver.Add(sum([edge_vars[(node3, node1)] for node3 in nodes if node1 != node3]) <= 2 - edge_vars[(node1, node2)])
+
+    for node1 in nodes:
+        if node1 in vehicle_nodes:
+            solver.Add(sum([edge_vars[(node3, node1)] for node3 in nodes if node1 != node3]) == 0)
+        else:
+            solver.Add(sum([edge_vars[(node1, node3)] for node3 in nodes if node1 != node3]) <= 1)
+            solver.Add(sum([edge_vars[(node3, node1)] for node3 in nodes if node1 != node3]) <= 1)
+
 
     # Objective function
+    solver.Maximize(sum([edge_vars[var_key] * (trp.profit(var_key[0], var_key[1]) - trp.dist(var_key[0], var_key[1])) for var_key in edge_vars]))
+    #solver.Maximize(sum([edge_vars[var_key] * (trp.profit(var_key[0], var_key[1]) - trp.dist(var_key[0], var_key[1])) for var_key in edge_vars]))
     
+    # Solve
+    status = solver.Solve()
+    print(solver.Objective().Value())
+
+    # Get solution if exists
+    if status == pywraplp.Solver.INFEASIBLE: raise SystemError(f'Solution is INFEASIBLE')
+    elif status == pywraplp.Solver.UNBOUNDED: raise SystemError(f'Solution is UNBOUNDED')
+    elif status == pywraplp.Solver.ABNORMAL: raise SystemError(f'Solution is ABNORMAL')
+    elif status == pywraplp.Solver.NOT_SOLVED: raise SystemError(f'Solution not been found yet')
     
+    # Get routes
+    routes_dict = {}
+    for var_key in edge_vars:
+        edge_var = edge_vars[var_key]
+        value = edge_var.solution_value()
+        if value:
+            if var_key[0] in routes_dict: print(var_key)
+            routes_dict[var_key[0]] = var_key[1]
+    
+    for vehicle in trp.vehicles:
+        route = [vehicle.node]
+
+        while route[-1] in routes_dict:
+            route.append(routes_dict[route[-1]])
+
+        if len(route) > 1: trp.routes.append(route)
+
 
     return trp

@@ -26,7 +26,8 @@ def draw(trp : TRP):
             v = route[i+1]
             dist = trp.dist(u,v)
             G.add_edge(u, v, weight = 1/dist if dist != 0 else 0, len=dist)
-    #pos = nx.kamada_kawai_layout(G)
+    #pos = nx.sprite_layout(G)
+    # pos = nx.kamada_kawai_layout(G)
     #pos = nx.planar_layout(G)
     #pos = nx.fruchterman_reingold_layout(G)
     #pos = graphviz_layout(G, prog='sfdp')
@@ -58,9 +59,9 @@ def draw(trp : TRP):
             G,
             pos,
             edgelist=[(request.nodeFrom, request.nodeTo)],
-            width=2,
+            width=8,
             edge_color='blue',
-            alpha=1,
+            alpha=0.5,
         )
 
     # Draw routes
@@ -70,7 +71,7 @@ def draw(trp : TRP):
             G,
             pos,
             edgelist=[(route[i], route[i+1]) for i in range(len(route)-1)],
-            width=4,
+            width=2,
             edge_color=route_color,
             alpha=1,
         )

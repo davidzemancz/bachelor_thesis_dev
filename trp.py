@@ -39,12 +39,12 @@ class TRP:
     def vehicle(self, id) -> Vehicle:
         for v in self.vehicles:
             if v.id == id: return v
-        raise KeyError(id)
+        return None
 
     def request(self, id) -> Request:
         for r in self.request:
             if r.id == id: return r
-        raise KeyError(id)
+        return None
 
     def nodes(self):
         nodes = []
@@ -57,13 +57,25 @@ class TRP:
 
         return nodes
 
+    def request(self, nodeFrom, nodeTo):
+        for request in self.requests:
+            if request.nodeFrom == nodeFrom and request.nodeTo == nodeTo:
+                return request
+        return None
+
+    def profit(self, nodeFrom, nodeTo):
+        req1 = self.request(nodeFrom, nodeTo)
+        if req1 is not None: return req1.profit
+        else: return 0
+
     def edges(self):
         nodes = self.nodes()
         edges = []
-        for node1 in nodes:
-            for node2 in nodes:
-                if node1 == node2: continue
+        for i, node1 in enumerate(nodes):
+            for j, node2 in enumerate(nodes):
+                #if j > i:
                 edges.append((node1, node2))
+        return edges
 
 
     def copy(self):
