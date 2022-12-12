@@ -3,11 +3,13 @@ import copy
 
 
 class Request:
-    def __init__(self, id, nodeFrom, nodeTo, profit) -> None:
+    def __init__(self, id, nodeFrom, nodeTo, profit, twFrom, twTo) -> None:
         self.id = id
         self.nodeFrom = nodeFrom
         self.nodeTo = nodeTo
         self.profit = profit
+        self.twFrom = twFrom
+        self.twTo = twTo
 
     
 class Vehicle:
@@ -67,6 +69,11 @@ class TRP:
         req1 = self.request(nodeFrom, nodeTo)
         if req1 is not None: return req1.profit
         else: return 0
+
+    def time_window(self, nodeFrom, nodeTo):
+        req1 = self.request(nodeFrom, nodeTo)
+        if req1 is not None: return (req1.twFrom, req1.twTo)
+        else: return (0,0)
 
     def edges(self):
         nodes = self.nodes()

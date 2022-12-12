@@ -47,14 +47,22 @@ def solve(trp : TRP):
     # 4) Time
     for node1 in nodes:
         for node2 in nodes:
-            if node1 == node2 or node1 in vehicle_nodes or node2 in vehicle_nodes: continue
+            if node1 == node2 or node2 in vehicle_nodes: continue
             M = 10000
-            solver.Add(time_vars[node1] + trp.dist(node1, node2) - M*(1 - edge_vars[(node1, node2)]) <= time_vars[node2])
+            edgeTravelTime = 1 # trp.dist(node1, node2) ... fixed travel time
+            solver.Add(time_vars[node1] + edgeTravelTime - M*(1 - edge_vars[(node1, node2)]) <= time_vars[node2])
+
+    # 5) Time windows
+    for request in trp.requests:
+        solver.Add(time_vars[request.nodeTo] <= request.twTo)
+        solver.Add(time_vars[request.nodeTo] >= request.twFrom)
 
     # Objective function
     solver.Maximize(sum([edge_vars[var_key] * (trp.profit(var_key[0], var_key[1]) - trp.dist(var_key[0], var_key[1])) for var_key in edge_vars]))
     
     # Solve
+    solver.SetTimeLimit(60 * 1000)
+    solver.SetNumThreads(12)
     status = solver.Solve()
     stats = { 'objective_value': solver.Objective().Value() }
 

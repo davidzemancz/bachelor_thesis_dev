@@ -18,7 +18,9 @@ def generate(requests_count, vehicles_count, seed = None, dist = None) -> TRP:
         nodeFrom = (random.randint(0, UP), random.randint(0, UP))
         nodeTo = (random.randint(0, UP), random.randint(0, UP))
         profit = 5 * dist(nodeFrom, nodeTo)
-        trp.requests.append(Request(r_i, nodeFrom, nodeTo, profit))
+        twFrom = random.randint(1, 10)
+        twTo = twFrom + random.randint(3, 6)
+        trp.requests.append(Request(r_i, nodeFrom, nodeTo, profit, twFrom, twTo))
 
     return trp
 
