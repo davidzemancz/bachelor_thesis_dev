@@ -62,7 +62,7 @@ def solve(trp : TRP):
     
     # Solve
     solver.SetTimeLimit(60 * 1000)
-    solver.SetNumThreads(12)
+    solver.SetNumThreads(4)
     status = solver.Solve()
     stats = { 'objective_value': solver.Objective().Value() }
 
