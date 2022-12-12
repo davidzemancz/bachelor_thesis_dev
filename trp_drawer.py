@@ -22,8 +22,8 @@ def draw(trp : TRP):
     # Add routes edges
     for route in trp.routes:
         for i in range(len(route)-1):
-            u = route[i]
-            v = route[i+1]
+            u = route[i].node
+            v = route[i+1].node
             G.add_edge(u, v)
     pos = nx.spring_layout(G)
     #pos = nx.kamada_kawai_layout(G)
@@ -69,7 +69,7 @@ def draw(trp : TRP):
         nx.draw_networkx_edges(
             G,
             pos,
-            edgelist=[(route[i], route[i+1]) for i in range(len(route)-1)],
+            edgelist=[(route[i].node, route[i+1].node) for i in range(len(route)-1)],
             width=2,
             edge_color=route_color,
             alpha=1,

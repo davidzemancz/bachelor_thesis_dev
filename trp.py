@@ -11,11 +11,15 @@ class Request:
         self.twFrom = twFrom
         self.twTo = twTo
 
-    
 class Vehicle:
     def __init__(self, id, node) -> None:
         self.id = id
         self.node = node
+
+class RoutePoint:
+    def __init__(self, node, time) -> None:
+        self.node = node
+        self.time = time
 
 class TRP:
     def __init__(self, nodes_count, dist):
