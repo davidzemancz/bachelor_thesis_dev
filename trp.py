@@ -22,9 +22,9 @@ class RoutePoint:
         self.time = time
 
 class TRP:
-    def __init__(self, nodes_count, dist):
-        self.nodes_count = nodes_count
+    def __init__(self, dist, time = 0):
         self.dist = dist
+        self.time = 0
 
         self.vehicles = []
         self.requests = []
