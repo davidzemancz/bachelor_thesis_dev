@@ -54,7 +54,7 @@ def solve(trp : TRP, params):
     # 4) Indicator of using edge (used for linear relaxation)
     for edge in edges:
         solver.Add(v_edge_ind[edge] >= v_use_edge[edge])
-        #solver.Add(v_edge_ind[edge] <= v_use_edge[edge] + (LP_USE_EDGE_LB - 0.001))
+        solver.Add(v_edge_ind[edge] <= v_use_edge[edge] + (1 - 0.0001))
 
     # 4) Time
     for node1 in nodes:
@@ -92,7 +92,7 @@ def solve(trp : TRP, params):
         edge_var = v_use_edge[var_key]
         value = edge_var.solution_value()
         if value > LP_USE_EDGE_LB:
-            if var_key[0] in routes_dict: continue# raise SystemError(var_key[0])
+            if var_key[0] in routes_dict: raise SystemError(var_key[0])
             routes_dict[var_key[0]] = var_key[1]
     
     objective_value = 0.0
