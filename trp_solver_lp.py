@@ -57,13 +57,16 @@ def solve(trp : TRP, params):
         solver.Add(v_edge_ind[edge] >= v_use_edge[edge])
         solver.Add(v_edge_ind[edge] <= v_use_edge[edge] + (1 - 0.0001))
 
-    # 4) Time
+    # 4) Time - traveling between nodes
     for node1 in nodes:
         for node2 in nodes:
             if node1 == node2 or node2 in vehicle_nodes: continue
             M = 1000000
             edgeTravelTime = trp.travel_time(node1, node2)
             solver.Add(v_times[node1] + edgeTravelTime - M*(1 - v_edge_ind[(node1, node2)] ) <= v_times[node2])
+
+    for node in vehicle_nodes:
+        solver.Add(v_times[node] == trp.minutes)
 
     # 5) Time windows
     for request in trp.requests:

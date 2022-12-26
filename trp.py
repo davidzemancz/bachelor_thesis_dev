@@ -33,27 +33,44 @@ class TRP:
 
 
     def tick(self):
-        self.minutes += 1
+        self.minutes += 10
 
     def update(self):
+      
+        removed_nodes = []
         i = 0
-        while i < len(self.request):
+        while i < len(self.requests):
             req = self.requests[i]
-            if (req.twTo - self.travel_time(req.nodeFrom, req.nodeTo)) < self.minutes:
-                del self.requests[i]
+            processable = False
+            for vehicle in self.vehicles:
+                if (req.twTo - self.travel_time(req.nodeFrom, req.nodeTo) - self.travel_time(vehicle.node, req.nodeFrom)) >= self.minutes:
+                    processable = True
+                    break
+
+            if not processable:
+                removed_nodes.append(req.nodeFrom)
+                removed_nodes.append(req.nodeTo)
+                self.requests.remove(req)
             else:
                 i += 1
+        
 
         for route in self.routes:
-            pass
+            route_vehicle = self.route_vehicle(route)
+            for i, route_point in enumerate(route):
+                if i == len(route) - 1:
+                    route_vehicle.node = route_point.node
+                elif i > 0 and route_point.node not in removed_nodes:
+                    if i > 1: route_vehicle.node = route_point.node
+                    break
+            print(route_vehicle.node)
 
-
-            
+        self.routes.clear()
 
     def travel_time(self, node1, node2):
         dist = self.dist(node1, node2) # Distance in kilometers
         vehicle_speed = 40 # Km/hour
-        return dist/vehicle_speed
+        return (dist/vehicle_speed) * 60
 
     def total_dist(self):
         total_dist = 0.0
@@ -69,6 +86,11 @@ class TRP:
     def vehicle(self, id) -> Vehicle:
         for v in self.vehicles:
             if v.id == id: return v
+        return None
+
+    def route_vehicle(self, route) -> Vehicle:
+        for v in self.vehicles:
+            if v.node == route[0].node: return v
         return None
 
     def request(self, id) -> Request:
