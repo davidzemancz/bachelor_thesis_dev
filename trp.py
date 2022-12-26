@@ -33,7 +33,7 @@ class TRP:
 
 
     def tick(self):
-        self.minutes += 10
+        self.minutes += 5
 
     def update(self):
       
@@ -63,7 +63,6 @@ class TRP:
                 elif i > 0 and route_point.node not in removed_nodes:
                     if i > 1: route_vehicle.node = route_point.node
                     break
-            print(route_vehicle.node)
 
         self.routes.clear()
 

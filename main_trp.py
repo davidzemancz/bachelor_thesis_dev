@@ -8,13 +8,13 @@ import random
 
 def main():
     #test1()
-    run(iters=5, vehicles=1, requests_per_tick=1)
+    run(iters=20, vehicles=15, requests_per_tick=10)
 
 
 def run(iters, vehicles, requests_per_tick):
     params = {
         'lp_relaxation': None,
-        'threads': None,
+        'threads': 4,
         'time_limit': None
     }
 
@@ -24,7 +24,7 @@ def run(iters, vehicles, requests_per_tick):
         for j in range(requests_per_tick):
             trp_gen.next_request(trp)
         
-        params['lp_relaxation'] = False
+        params['lp_relaxation'] = True
         solved_trp, stats = trp_solver.solve_lp(trp, params)
         trp_printer.to_console(solved_trp, 'TRP LP-rel', stats)
 
