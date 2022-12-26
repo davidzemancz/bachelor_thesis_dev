@@ -1,6 +1,7 @@
 # https://developers.google.com/optimization/mip/mip_example
 # https://google.github.io/or-tools/python/ortools/linear_solver/pywraplp.html
 
+from pprint import pprint
 from ortools.linear_solver import pywraplp
 from trp import TRP, RoutePoint
 import utils
@@ -42,14 +43,14 @@ def solve(trp : TRP, params):
 
     # 2) Vehicle can leave its original location using at most one edge
     for vehicle in trp.vehicles:
-        solver.Add(sum([v_use_edge[(vehicle.node, node)] for node in nodes if node != vehicle.node]) == 1)
+        solver.Add(sum([v_use_edge[(vehicle.node, node)] for node in nodes if node != vehicle.node]) <= 1)
         #solver.Add(sum([v_use_edge[(node3, vehicle.node)] for node3 in nodes if vehicle.node != node3]) == 0)
 
     # 3) Cycles are not allowed, just paths
     for node1 in nodes :
-        if node1 not in vehicle_nodes:
-            solver.Add(sum([v_use_edge[(node1, node3)] for node3 in nodes if node1 != node3]) <= 1)
-            solver.Add(sum([v_use_edge[(node3, node1)] for node3 in nodes if node1 != node3]) <= 1)
+        #if node1 not in vehicle_nodes:
+        solver.Add(sum([v_use_edge[(node1, node3)] for node3 in nodes if node1 != node3]) <= 1)
+        solver.Add(sum([v_use_edge[(node3, node1)] for node3 in nodes if node1 != node3]) <= 1)
 
     # 4) Indicator of using edge (used for linear relaxation)
     for edge in edges:
@@ -60,8 +61,8 @@ def solve(trp : TRP, params):
     for node1 in nodes:
         for node2 in nodes:
             if node1 == node2 or node2 in vehicle_nodes: continue
-            M = 50000
-            edgeTravelTime = 1 # trp.dist(node1, node2) ... fixed travel time
+            M = 1000000
+            edgeTravelTime = trp.travel_time(node1, node2)
             solver.Add(v_times[node1] + edgeTravelTime - M*(1 - v_edge_ind[(node1, node2)] ) <= v_times[node2])
 
     # 5) Time windows
@@ -92,9 +93,17 @@ def solve(trp : TRP, params):
         edge_var = v_use_edge[var_key]
         value = edge_var.solution_value()
         if value > LP_USE_EDGE_LB:
-            if var_key[0] in routes_dict: raise SystemError(var_key[0])
+            #if var_key[0] in routes_dict: raise SystemError(var_key[0]) ... ignored because of rounding issues
             routes_dict[var_key[0]] = var_key[1]
-    
+
+    #     if value>0:
+    #         if var_key[0] not in routes_dict: 
+    #             routes_dict[var_key[0]] = []
+    #         routes_dict[var_key[0]].append((var_key[1],value))
+
+    # pprint(routes_dict)
+    # exit()
+
     objective_value = 0.0
     trp.routes = []
     for vehicle in trp.vehicles:

@@ -21,3 +21,6 @@ def rnd_color(f):
 
 def eclidean_norm(cords1, cords2):
     return math.sqrt((cords1[0] - cords2[0])**2 + (cords1[1] - cords2[1])**2)
+
+def manhattan_norm(cords1, cords2):
+    return abs(cords1[0] - cords2[0]) + abs(cords1[1] - cords2[1])
