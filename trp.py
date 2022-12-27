@@ -30,6 +30,7 @@ class TRP:
         self.requests = []
 
         self.routes = []
+        self.handled_requests = []
 
 
     def tick(self):
@@ -57,12 +58,19 @@ class TRP:
 
         for route in self.routes:
             route_vehicle = self.route_vehicle(route)
-            for i, route_point in enumerate(route):
-                if i == len(route) - 1:
-                    route_vehicle.node = route_point.node
-                elif i > 0 and route_point.node not in removed_nodes:
-                    if i > 1: route_vehicle.node = route_point.node
+            for i in range(2, len(route), 2):
+                route_point = route[i]
+               
+                if i == 2 and route_vehicle.node not in removed_nodes:
                     break
+                elif i == len(route) - 1:
+                    route_vehicle.node = route_point.node
+                elif route_point.node not in removed_nodes:
+                    route_vehicle.node = route_point.node
+                    break
+                else:
+                    self.handled_requests.append(self.request(route[i-1], route[i]))
+
 
         self.routes.clear()
 

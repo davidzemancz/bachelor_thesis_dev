@@ -9,7 +9,7 @@ def to_console(trp : TRP, name = 'TRP', stats = None):
     for vehicle in trp.vehicles:
         print(f'Vehicle {vehicle.id} at {vehicle.node}')
     for route in trp.routes:
-        print(f'Route {[str(format_tuple(route_point.node)) + " at " + str(route_point.minutes) for route_point in route]}')
+        print(f'Route {[str(format_tuple(route_point.node)) + " at " + str(format(route_point.minutes, ".2f")) for route_point in route]}')
     if stats:
         print(f'Time elapsed:', utils.time_to_str(stats['time_elapsed']))
         print(f'Objective value:', stats['objective_value'])

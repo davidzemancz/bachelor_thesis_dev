@@ -30,7 +30,7 @@ def solve(trp : TRP, params):
     
     v_times = {}
     for node in nodes:
-        var = solver.IntVar(0, INF, str(node))
+        var = solver.NumVar(0, INF, str(node))
         v_times[node] = var
 
     # ----- Constraints -----
@@ -61,7 +61,7 @@ def solve(trp : TRP, params):
     for node1 in nodes:
         for node2 in nodes:
             if node1 == node2 or node2 in vehicle_nodes: continue
-            M = 1000000
+            M = 10_000_000
             edgeTravelTime = trp.travel_time(node1, node2)
             solver.Add(v_times[node1] + edgeTravelTime - M*(1 - v_edge_ind[(node1, node2)] ) <= v_times[node2])
 
