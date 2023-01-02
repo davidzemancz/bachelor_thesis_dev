@@ -8,7 +8,7 @@ import random
 
 def main():
     #test1()
-    run(iters=1, vehicles=3, requests_per_tick=20)
+    run(iters=1, vehicles=5, requests_per_tick=30)
 
 
 def run(iters, vehicles, requests_per_tick):

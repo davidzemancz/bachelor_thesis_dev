@@ -28,7 +28,7 @@ def next_request(trp : TRP) -> TRP:
 def get_request(trp) -> Request:
     nodeFrom = rnd_pos()
     nodeTo = rnd_pos()
-    profit = 45 * trp.dist(nodeFrom, nodeTo)
+    profit = 60 * trp.dist(nodeFrom, nodeTo)
     twFrom = trp.minutes + trp.travel_time(nodeFrom, nodeTo) + random.randint(5, 30)
     twTo = twFrom + random.randint(5, 30)
     return Request(len(trp.requests) + 1, nodeFrom, nodeTo, profit, twFrom, twTo)

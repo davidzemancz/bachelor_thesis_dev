@@ -28,10 +28,10 @@ def solve(trp : TRP, params):
         v_edge_ind[edge] = solver.IntVar(0, 1, "ind_" + str(edge))
         v_use_edge[edge] = var
     
-    v_times = {}
-    for node in nodes:
-        var = solver.NumVar(0, INF, str(node))
-        v_times[node] = var
+    # v_times = {}
+    # for node in nodes:
+    #     var = solver.NumVar(0, INF, str(node))
+    #     v_times[node] = var
 
     # ----- Constraints -----
     
@@ -43,7 +43,7 @@ def solve(trp : TRP, params):
 
     # 2) Vehicle can leave its original location using at most one edge
     for vehicle in trp.vehicles:
-        solver.Add(sum([v_use_edge[(vehicle.node, node)] for node in nodes if node != vehicle.node]) == 1)
+        solver.Add(sum([v_use_edge[(vehicle.node, node)] for node in nodes if node != vehicle.node]) <= 1)
         #solver.Add(sum([v_use_edge[(node3, vehicle.node)] for node3 in nodes if vehicle.node != node3]) == 0)
 
     # 3) Cycles are not allowed, just paths
@@ -58,21 +58,21 @@ def solve(trp : TRP, params):
     #     solver.Add(v_edge_ind[edge] <= v_use_edge[edge] + (1 - 0.0001))
 
     # 4) Time - traveling between nodes
-    for node1 in nodes:
-        for node2 in nodes:
-            if node1 == node2 or node2 in vehicle_nodes: continue
-            M = 10_000_000
-            edgeTravelTime = trp.travel_time(node1, node2)
-            # solver.Add(v_times[node1] + edgeTravelTime - M*(1 - v_edge_ind[(node1, node2)] ) <= v_times[node2])
-            solver.Add(v_times[node1] + edgeTravelTime - M*(1 - v_use_edge[(node1, node2)] ) <= v_times[node2])
+    # for node1 in nodes:
+    #     for node2 in nodes:
+    #         if node1 == node2 or node2 in vehicle_nodes: continue
+    #         M = 10_000_000
+    #         edgeTravelTime = trp.travel_time(node1, node2)
+    #         # solver.Add(v_times[node1] + edgeTravelTime - M*(1 - v_edge_ind[(node1, node2)] ) <= v_times[node2])
+    #         solver.Add(v_times[node1] + edgeTravelTime - M*(1 - v_use_edge[(node1, node2)] ) <= v_times[node2])
 
-    for node in vehicle_nodes:
-        solver.Add(v_times[node] == trp.minutes)
+    # for node in vehicle_nodes:
+    #     solver.Add(v_times[node] == trp.minutes)
 
-    # 5) Time windows
-    for request in trp.requests:
-        solver.Add(v_times[request.nodeTo] <= request.twTo)
-        solver.Add(v_times[request.nodeTo] >= request.twFrom)
+    # # 5) Time windows
+    # for request in trp.requests:
+    #     solver.Add(v_times[request.nodeTo] <= request.twTo)
+    #     solver.Add(v_times[request.nodeTo] >= request.twFrom)
 
     # Objective function
     solver.Maximize(sum([v_use_edge[var_key] * (trp.profit(var_key[0], var_key[1]) - trp.dist(var_key[0], var_key[1])) for var_key in v_use_edge]))
@@ -97,7 +97,7 @@ def solve(trp : TRP, params):
         edge_var = v_use_edge[var_key]
         value = edge_var.solution_value()
         if value > LP_USE_EDGE_LB:
-            #if var_key[0] in routes_dict: raise SystemError(var_key[0]) ... ignored because of rounding issues
+            if var_key[0] in routes_dict: raise SystemError(var_key[0]) # ... ignored because of rounding issues
             routes_dict[var_key[0]] = var_key[1]
 
     #     if value>0:
@@ -111,7 +111,7 @@ def solve(trp : TRP, params):
     objective_value = 0.0
     trp.routes = []
     for vehicle in trp.vehicles:
-        route = [RoutePoint(vehicle.node, v_times[vehicle.node].solution_value())]
+        route = [RoutePoint(vehicle.node, 0)]
 
         while route[-1].node in routes_dict:
             node1 = route[-1].node
@@ -119,7 +119,7 @@ def solve(trp : TRP, params):
 
             objective_value += trp.profit(node1, node2) - trp.dist(node1, node2)
 
-            route.append(RoutePoint(node2, v_times[node2].solution_value()))
+            route.append(RoutePoint(node2, 0))
 
         if len(route) > 1: trp.routes.append(route)
 
